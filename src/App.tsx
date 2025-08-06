@@ -9,17 +9,40 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ParticipantProfile from "./pages/ParticipantProfile";
 import SessionLogEntry from "./pages/SessionLogEntry";
+import Calendar from "./pages/Calendar";
+import Invoices from "./pages/Invoices";
+import Documents from "./pages/Documents";
+import Staff from "./pages/Staff";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+  
   return user ? <>{children}</> : <Navigate to="/login" />;
 };
 
 const AppRoutes = () => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <Routes>
@@ -30,12 +53,12 @@ const AppRoutes = () => {
       <Route path="/participants" element={<ProtectedRoute><ParticipantProfile /></ProtectedRoute>} />
       <Route path="/sessions/new" element={<ProtectedRoute><SessionLogEntry /></ProtectedRoute>} />
       <Route path="/sessions" element={<ProtectedRoute><SessionLogEntry /></ProtectedRoute>} />
-      <Route path="/calendar" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/invoices" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/documents" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/staff" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+      <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
+      <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+      <Route path="/staff" element={<ProtectedRoute><Staff /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

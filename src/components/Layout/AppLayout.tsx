@@ -21,7 +21,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
       
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${
+      <div className={`flex-1 flex flex-col transition-all duration-300 min-h-screen w-full ${
         sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
       }`}>
         <Header 
@@ -31,7 +31,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
           sidebarCollapsed={sidebarCollapsed}
         />
         
-        <main className="flex-1 p-6 bg-muted/30">
+        <main className="flex-1 p-6 bg-muted/30 w-full">
           {children}
         </main>
       </div>

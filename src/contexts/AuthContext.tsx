@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type UserRole = 'super_admin' | 'support_worker' | 'support_coordinator' | 'allied_health';
 
@@ -30,7 +30,22 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load user from localStorage on app start
+  useEffect(() => {
+    const storedUser = localStorage.getItem('ndis-user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Failed to parse stored user:', error);
+        localStorage.removeItem('ndis-user');
+      }
+    }
+    setIsLoading(false);
+  }, []);
 
   const login = async (email: string, password: string, role: UserRole) => {
     setIsLoading(true);
@@ -48,11 +63,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     
     setUser(mockUser);
+    localStorage.setItem('ndis-user', JSON.stringify(mockUser));
     setIsLoading(false);
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('ndis-user');
   };
 
   return (

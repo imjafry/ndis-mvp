@@ -73,15 +73,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, onClose, 
       
       {/* Sidebar */}
       <div className={cn(
-        "fixed top-0 left-0 h-full bg-sidebar border-r border-sidebar-border shadow-lg z-50 transition-all duration-300 ease-in-out",
+        "fixed top-0 left-0 h-screen bg-sidebar border-r border-sidebar-border shadow-lg z-50 transition-all duration-300 ease-in-out",
         "lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full",
         isCollapsed ? "lg:w-16" : "lg:w-64",
-        "lg:static lg:z-auto"
+        "lg:static lg:z-auto flex flex-col"
       )}>
         {/* Header */}
         <div className={cn(
-          "flex items-center justify-between p-4 border-b border-sidebar-border",
+          "flex items-center justify-between p-4 border-b border-sidebar-border flex-shrink-0",
           isCollapsed && "lg:justify-center"
         )}>
           {!isCollapsed && (
@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, onClose, 
 
         {/* User Profile */}
         {!isCollapsed && (
-          <div className="p-4 border-b border-sidebar-border">
+          <div className="p-4 border-b border-sidebar-border flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="w-full justify-start p-2 h-auto hover:bg-sidebar-accent">
@@ -152,7 +152,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, onClose, 
 
         {/* Collapsed user avatar */}
         {isCollapsed && (
-          <div className="hidden lg:flex justify-center p-4 border-b border-sidebar-border">
+          <div className="hidden lg:flex justify-center p-4 border-b border-sidebar-border flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="p-2">
