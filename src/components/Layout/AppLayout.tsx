@@ -10,15 +10,28 @@ interface AppLayoutProps {
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <div className="min-h-screen bg-background flex w-full">
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        isCollapsed={sidebarCollapsed}
+        onClose={() => setSidebarOpen(false)}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
       
-      <div className="flex-1 flex flex-col lg:ml-64">
-        <Header onMenuClick={() => setSidebarOpen(true)} title={title} />
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+      }`}>
+        <Header 
+          onMenuClick={() => setSidebarOpen(true)} 
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          title={title}
+          sidebarCollapsed={sidebarCollapsed}
+        />
         
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 bg-muted/30">
           {children}
         </main>
       </div>
