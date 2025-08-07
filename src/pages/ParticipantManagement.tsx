@@ -171,6 +171,13 @@ const ParticipantManagement = () => {
     setParticipants(participants.filter(participant => participant.id !== id));
   };
 
+  const getParticipantForForm = (participant: Participant) => {
+    return {
+      ...participant,
+      totalBudget: participant.totalBudget.toString()
+    };
+  };
+
   return (
     <AppLayout title="Participant Management">
       <div className="space-y-6">
@@ -378,7 +385,7 @@ const ParticipantManagement = () => {
             </DialogHeader>
             {selectedParticipant && (
               <ParticipantForm 
-                participant={selectedParticipant}
+                participant={getParticipantForForm(selectedParticipant)}
                 onSubmit={handleEditParticipant}
                 onCancel={() => {
                   setIsEditDialogOpen(false);

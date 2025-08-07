@@ -189,6 +189,14 @@ const Staff = () => {
     setStaffMembers(staffMembers.filter(staff => staff.id !== id));
   };
 
+  // Convert staff data for form (numbers to strings)
+  const getStaffForForm = (staff: StaffMember) => {
+    return {
+      ...staff,
+      hourlyRate: staff.hourlyRate.toString()
+    };
+  };
+
   return (
     <AppLayout title="Staff Management">
       <div className="space-y-6">
@@ -386,7 +394,7 @@ const Staff = () => {
             </DialogHeader>
             {selectedStaff && (
               <StaffForm 
-                staff={selectedStaff}
+                staff={getStaffForForm(selectedStaff)}
                 onSubmit={handleEditStaff}
                 onCancel={() => {
                   setIsEditDialogOpen(false);
