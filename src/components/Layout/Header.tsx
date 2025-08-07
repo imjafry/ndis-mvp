@@ -22,8 +22,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick, onToggleCollapse, title, sidebarCollapsed }) => {
   return (
-    <header className="bg-card border-b border-border px-6 py-4 sticky top-0 z-30 backdrop-blur-sm">
-      <div className="flex items-center justify-between">
+    <header className="bg-card border-b border-border px-6 py-4 sticky top-0 z-30 backdrop-blur-sm flex-shrink-0 min-h-[73px]">
+      <div className="flex items-center justify-between h-full">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"

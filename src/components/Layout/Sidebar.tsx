@@ -4,7 +4,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Calendar, FileText, Settings, 
   ClipboardList, DollarSign, Upload, User, LogOut,
-  Menu, X, ChevronDown, ChevronLeft, ChevronRight
+  X, ChevronDown, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useAuth, UserRole } from '../../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -73,32 +73,37 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, onClose, 
       
       {/* Sidebar */}
       <div className={cn(
-        "fixed top-0 left-0 h-screen bg-sidebar border-r border-sidebar-border shadow-lg z-50 transition-all duration-300 ease-in-out",
+        "fixed top-0 left-0 h-screen bg-sidebar border-r border-sidebar-border shadow-lg z-50 transition-all duration-300 ease-in-out flex flex-col",
         "lg:translate-x-0",
-        isOpen ? "translate-x-0" : "-translate-x-full",
-        isCollapsed ? "lg:w-16" : "lg:w-64",
-        "lg:static lg:z-auto flex flex-col"
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        isCollapsed ? "lg:w-16 w-64" : "w-64"
       )}>
         {/* Header */}
         <div className={cn(
-          "flex items-center justify-between p-4 border-b border-sidebar-border flex-shrink-0",
+          "flex items-center justify-between p-4 border-b border-sidebar-border flex-shrink-0 min-h-[73px]",
           isCollapsed && "lg:justify-center"
         )}>
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-sm">ND</span>
               </div>
               <span className="font-bold text-xl text-sidebar-foreground">NDISCare</span>
             </div>
           )}
           
+          {isCollapsed && (
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-sm">ND</span>
+            </div>
+          )}
+
           {/* Desktop collapse toggle */}
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggleCollapse}
-            className="hidden lg:flex"
+            className="hidden lg:flex flex-shrink-0"
           >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
@@ -108,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, onClose, 
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="lg:hidden"
+            className="lg:hidden flex-shrink-0"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -120,18 +125,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, onClose, 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="w-full justify-start p-2 h-auto hover:bg-sidebar-accent">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-10 w-10">
+                  <div className="flex items-center space-x-3 w-full">
+                    <Avatar className="h-10 w-10 flex-shrink-0">
                       <AvatarImage src={user.avatar} />
                       <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground">
                         {user.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 text-left">
-                      <p className="font-medium text-sm text-sidebar-foreground">{user.name}</p>
-                      <p className="text-xs text-sidebar-foreground/70">{getRoleDisplayName(user.role)}</p>
+                    <div className="flex-1 text-left min-w-0">
+                      <p className="font-medium text-sm text-sidebar-foreground truncate">{user.name}</p>
+                      <p className="text-xs text-sidebar-foreground/70 truncate">{getRoleDisplayName(user.role)}</p>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-sidebar-foreground/50" />
+                    <ChevronDown className="h-4 w-4 text-sidebar-foreground/50 flex-shrink-0" />
                   </div>
                 </Button>
               </DropdownMenuTrigger>
@@ -196,7 +201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsed, onClose, 
                     }
                   }}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                    "flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200",
                     "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     isActive && "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm",
                     isCollapsed && "lg:justify-center lg:space-x-0"
