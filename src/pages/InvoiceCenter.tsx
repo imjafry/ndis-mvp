@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AppLayout } from '../components/Layout/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,11 +22,19 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { InvoiceView } from '../components/invoices/InvoiceView';
 
 interface Invoice {
   id: string;
   invoiceNumber: string;
   participantName: string;
+  participantNdis: string;
+  participantAddress: string;
   staffName: string;
   issueDate: string;
   dueDate: string;
@@ -41,11 +48,16 @@ interface Invoice {
     amount: number;
   }>;
   notes: string;
+  subtotal: number;
+  gst: number;
+  total: number;
 }
 
 const InvoiceCenter = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [isInvoiceViewOpen, setIsInvoiceViewOpen] = useState(false);
 
   // Mock data
   const [invoices] = useState<Invoice[]>([
@@ -53,11 +65,16 @@ const InvoiceCenter = () => {
       id: '1',
       invoiceNumber: 'INV-2024-001',
       participantName: 'John Smith',
+      participantNdis: '4311234567',
+      participantAddress: '123 Main St, Melbourne VIC 3000',
       staffName: 'Mike Chen',
       issueDate: '2024-01-15',
       dueDate: '2024-02-14',
       amount: 542.50,
       status: 'sent',
+      subtotal: 493.18,
+      gst: 49.32,
+      total: 542.50,
       ndisItems: [
         { code: '01_011_0107_1_1', description: 'Personal Care/Personal Activity', quantity: 3, rate: 60.17, amount: 180.51 },
         { code: '01_013_0117_1_1', description: 'Community Nursing', quantity: 2, rate: 78.20, amount: 156.40 },
@@ -69,11 +86,16 @@ const InvoiceCenter = () => {
       id: '2',
       invoiceNumber: 'INV-2024-002',
       participantName: 'Sarah Johnson',
+      participantNdis: '4311234568',
+      participantAddress: '456 Oak Ave, Sydney NSW 2000',
       staffName: 'Emma Davis',
       issueDate: '2024-01-14',
       dueDate: '2024-02-13',
       amount: 785.20,
       status: 'paid',
+      subtotal: 713.82,
+      gst: 71.38,
+      total: 785.20,
       ndisItems: [
         { code: '15_052_0128_6_1', description: 'Occupational Therapy Assessment', quantity: 1, rate: 193.80, amount: 193.80 },
         { code: '01_011_0107_1_1', description: 'Personal Care/Personal Activity', quantity: 8, rate: 60.17, amount: 481.36 },
@@ -85,11 +107,16 @@ const InvoiceCenter = () => {
       id: '3',
       invoiceNumber: 'INV-2024-003',
       participantName: 'Michael Brown',
+      participantNdis: '4311234569',
+      participantAddress: '789 Pine Rd, Brisbane QLD 4000',
       staffName: 'Dr. Alex Thompson',
       issueDate: '2024-01-10',
       dueDate: '2024-02-09',
       amount: 1240.80,
       status: 'overdue',
+      subtotal: 1128.00,
+      gst: 112.80,
+      total: 1240.80,
       ndisItems: [
         { code: '15_052_0128_6_1', description: 'Physiotherapy', quantity: 4, rate: 193.80, amount: 775.20 },
         { code: '15_054_0128_6_1', description: 'Allied Health Report', quantity: 1, rate: 290.30, amount: 290.30 },
@@ -98,6 +125,11 @@ const InvoiceCenter = () => {
       notes: 'Multi-disciplinary assessment and treatment plan'
     }
   ]);
+
+  const handleViewInvoice = (invoice: Invoice) => {
+    setSelectedInvoice(invoice);
+    setIsInvoiceViewOpen(true);
+  };
 
   const filteredInvoices = invoices.filter(invoice => {
     const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -275,7 +307,11 @@ const InvoiceCenter = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
-                              <Button variant="ghost" size="sm">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleViewInvoice(invoice)}
+                              >
                                 <Eye className="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" size="sm">
@@ -338,6 +374,18 @@ const InvoiceCenter = () => {
             </Tabs>
           </CardContent>
         </Card>
+
+        {/* Invoice View Dialog */}
+        <Dialog open={isInvoiceViewOpen} onOpenChange={setIsInvoiceViewOpen}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0">
+            {selectedInvoice && (
+              <InvoiceView 
+                invoice={selectedInvoice}
+                onClose={() => setIsInvoiceViewOpen(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );

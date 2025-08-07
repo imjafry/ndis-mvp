@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AppLayout } from '../components/Layout/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +22,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { ParticipantForm } from '../components/forms/ParticipantForm';
 
 interface Participant {
   id: string;
@@ -37,14 +45,25 @@ interface Participant {
   status: 'active' | 'inactive' | 'pending';
   assignedStaff: string[];
   lastService: string;
+  dateOfBirth?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  primaryDisability?: string;
+  supportNeeds?: string;
+  goals?: string;
+  medicalInfo?: string;
+  notes?: string;
 }
 
 const ParticipantManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Mock data
-  const [participants] = useState<Participant[]>([
+  const [participants, setParticipants] = useState<Participant[]>([
     {
       id: '1',
       name: 'John Smith',
@@ -57,7 +76,15 @@ const ParticipantManagement = () => {
       usedBudget: 28500,
       status: 'active',
       assignedStaff: ['Mike Chen', 'Emma Davis'],
-      lastService: '2024-01-15'
+      lastService: '2024-01-15',
+      dateOfBirth: '1985-03-15',
+      emergencyContact: 'Mary Smith',
+      emergencyPhone: '0412 111 222',
+      primaryDisability: 'Intellectual Disability',
+      supportNeeds: 'Daily living support, community access assistance',
+      goals: 'Increase independence in daily activities, improve social skills',
+      medicalInfo: 'No significant medical conditions',
+      notes: 'Prefers morning appointments'
     },
     {
       id: '2',
@@ -113,6 +140,37 @@ const ParticipantManagement = () => {
     { title: 'Total Budget', value: `$${participants.reduce((sum, p) => sum + p.totalBudget, 0).toLocaleString()}`, icon: DollarSign, color: 'text-purple-600' }
   ];
 
+  const handleAddParticipant = (data: any) => {
+    const newParticipant: Participant = {
+      id: Date.now().toString(),
+      ...data,
+      totalBudget: parseFloat(data.totalBudget),
+      usedBudget: 0,
+      status: 'active' as const,
+      assignedStaff: [],
+      lastService: 'Never'
+    };
+    setParticipants([...participants, newParticipant]);
+    setIsAddDialogOpen(false);
+  };
+
+  const handleEditParticipant = (data: any) => {
+    if (selectedParticipant) {
+      const updatedParticipants = participants.map(participant => 
+        participant.id === selectedParticipant.id 
+          ? { ...participant, ...data, totalBudget: parseFloat(data.totalBudget) }
+          : participant
+      );
+      setParticipants(updatedParticipants);
+      setIsEditDialogOpen(false);
+      setSelectedParticipant(null);
+    }
+  };
+
+  const handleDeleteParticipant = (id: string) => {
+    setParticipants(participants.filter(participant => participant.id !== id));
+  };
+
   return (
     <AppLayout title="Participant Management">
       <div className="space-y-6">
@@ -149,10 +207,26 @@ const ParticipantManagement = () => {
                 </CardTitle>
                 <CardDescription>Manage participant profiles and assignments</CardDescription>
               </div>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Add Participant
-              </Button>
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Add Participant
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Add New Participant</DialogTitle>
+                    <DialogDescription>
+                      Enter the details for the new participant
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ParticipantForm 
+                    onSubmit={handleAddParticipant}
+                    onCancel={() => setIsAddDialogOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Search and Filters */}
@@ -262,7 +336,12 @@ const ParticipantManagement = () => {
                               <Eye className="mr-2 h-4 w-4" />
                               View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => {
+                                setSelectedParticipant(participant);
+                                setIsEditDialogOpen(true);
+                              }}
+                            >
                               <Edit className="mr-2 h-4 w-4" />
                               Edit Details
                             </DropdownMenuItem>
@@ -270,7 +349,10 @@ const ParticipantManagement = () => {
                               <Users className="mr-2 h-4 w-4" />
                               Assign Staff
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
+                            <DropdownMenuItem 
+                              className="text-red-600"
+                              onClick={() => handleDeleteParticipant(participant.id)}
+                            >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Remove
                             </DropdownMenuItem>
@@ -284,6 +366,28 @@ const ParticipantManagement = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Participant</DialogTitle>
+              <DialogDescription>
+                Update the details for {selectedParticipant?.name}
+              </DialogDescription>
+            </DialogHeader>
+            {selectedParticipant && (
+              <ParticipantForm 
+                participant={selectedParticipant}
+                onSubmit={handleEditParticipant}
+                onCancel={() => {
+                  setIsEditDialogOpen(false);
+                  setSelectedParticipant(null);
+                }}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
